@@ -43,14 +43,14 @@ impl Socket {
             // avoiding a race with another thread running fork/exec between
             // socket() and ioctl()
             #[cfg(any(target_os = "linux", target_os = "android"))]
-            match ::cvt(libc::socket(family, ty | libc::SOCK_CLOEXEC, 0)) {
+            match dbg!(::cvt(dbg!(libc::socket(family, ty | libc::SOCK_CLOEXEC, 0)))) {
                 Ok(fd) => return Ok(Socket { fd: fd }),
                 // Older versions of Linux return EINVAL; fall back to ioctl
                 Err(ref e) if e.raw_os_error() == Some(libc::EINVAL) => {}
                 Err(e) => return Err(e),
             }
 
-            let fd = try!(::cvt(libc::socket(family, ty, 0)));
+            let fd = try!(dbg!(::cvt(dbg!(libc::socket(family, ty, 0)))));
             ioctl(fd, FIOCLEX);
             Ok(Socket { fd: fd })
         }
